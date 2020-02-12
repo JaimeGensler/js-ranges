@@ -12,6 +12,11 @@ class Range {
         }
         this.start = start;
         this.end = end;
+        this.length = Math.abs(
+            typeof start === 'string'
+                ? end.charCodeAt(0) - start.charCodeAt(0)
+                : end - start
+        );
     }
 
     map(callback) {
@@ -22,8 +27,8 @@ class Range {
         const dir = this.start < this.end ? 1 : -1;
 
         for (
-            let element = mapStart, index = 0;
-            element <= mapEnd;
+            let index = 0, element = mapStart;
+            index <= this.length;
             element += dir, index++
         ) {
             const callReturn = callback(
@@ -49,7 +54,7 @@ class Range {
     }
 }
 
-let myRange = new Range(1, 20);
+let myRange = new Range(0, -100);
 console.log(
     myRange.map((x, i) => {
         return x + i;
