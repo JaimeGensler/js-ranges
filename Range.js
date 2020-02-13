@@ -21,19 +21,32 @@ class Range {
             );
     }
 
-    map(callback) {
-        const arr = [];
-        const startVal =
+    forEach(callback) {
+        let element =
             typeof this.start === 'string'
                 ? this.start.charCodeAt(0)
                 : this.start;
         const dir = this.start < this.end ? 1 : -1;
 
-        for (
-            let index = 0, element = startVal;
-            index < this.length;
-            element += dir, index++
-        ) {
+        for (let index = 0; index < this.length; element += dir, index++) {
+            callback(
+                typeof this.start === 'string'
+                    ? String.fromCharCode(element)
+                    : element,
+                index
+            );
+        }
+    }
+
+    map(callback) {
+        const arr = [];
+        let element =
+            typeof this.start === 'string'
+                ? this.start.charCodeAt(0)
+                : this.start;
+        const dir = this.start < this.end ? 1 : -1;
+
+        for (let index = 0; index < this.length; element += dir, index++) {
             const callReturn = callback(
                 typeof this.start === 'string'
                     ? String.fromCharCode(element)
@@ -49,17 +62,13 @@ class Range {
 
     reduce(callback, initial = 0) {
         let total = initial;
-        const startVal =
+        let element =
             typeof this.start === 'string'
                 ? this.start.charCodeAt(0)
                 : this.start;
         const dir = this.start < this.end ? 1 : -1;
 
-        for (
-            let index = 0, element = startVal;
-            index < this.length;
-            element += dir, index++
-        ) {
+        for (let index = 0; index < this.length; element += dir, index++) {
             total = callback(
                 total,
                 typeof this.start === 'string'
@@ -73,9 +82,14 @@ class Range {
     }
 }
 
-let myRange = new Range(0, 10);
-console.log(
-    myRange.reduce((acc, val, i) => {
-        return `${acc}-${val}-${i} `;
-    })
-);
+// let myRange = new Range('a', 'z');
+// myRange.forEach((x, i) => {
+//     console.log(`Element: ${x} | Index: ${i}`);
+// });
+
+const factorial = num => {
+    return new Range(1, num).reduce((acc, x) => {
+        return acc * x;
+    }, 1);
+};
+console.log(factorial(10));
