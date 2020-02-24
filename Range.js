@@ -1,33 +1,15 @@
 class Range {
     constructor(start, end) {
-        if (typeof start !== typeof end) {
-            throw new TypeError('Range values must be same type!');
-        } else if (
-            (typeof start !== 'string' && typeof start !== 'number') ||
-            (typeof start === 'number' && Math.floor(start) !== start)
-        ) {
-            throw new TypeError(
-                'Range values must only be integers or strings!'
-            );
-        }
+        typeCheck(start, end);
+
         this.start = start;
         this.end = end;
-        this.length =
-            1 +
-            Math.abs(
-                typeof start === 'string'
-                    ? end.charCodeAt(0) - start.charCodeAt(0)
-                    : end - start
-            );
+        this.length = getLength(start, end);
     }
 
     //iterators
     forEach(callback) {
-        let element =
-            typeof this.start === 'string'
-                ? this.start.charCodeAt(0)
-                : this.start;
-        const dir = this.start < this.end ? 1 : -1;
+        let [element, dir] = getIteratorValues(this.start, this.end);
 
         for (let index = 0; index < this.length; element += dir, index++) {
             callback(
@@ -41,11 +23,7 @@ class Range {
 
     map(callback) {
         const arr = [];
-        let element =
-            typeof this.start === 'string'
-                ? this.start.charCodeAt(0)
-                : this.start;
-        const dir = this.start < this.end ? 1 : -1;
+        let [element, dir] = getIteratorValues(this.start, this.end);
 
         for (let index = 0; index < this.length; element += dir, index++) {
             const callReturn = callback(
@@ -62,11 +40,7 @@ class Range {
 
     reduce(callback, initial = 0) {
         let total = initial;
-        let element =
-            typeof this.start === 'string'
-                ? this.start.charCodeAt(0)
-                : this.start;
-        const dir = this.start < this.end ? 1 : -1;
+        let [element, dir] = getIteratorValues(this.start, this.end);
 
         for (let index = 0; index < this.length; element += dir, index++) {
             total = callback(
@@ -83,11 +57,7 @@ class Range {
 
     filter(callback) {
         const arr = [];
-        let element =
-            typeof this.start === 'string'
-                ? this.start.charCodeAt(0)
-                : this.start;
-        const dir = this.start < this.end ? 1 : -1;
+        let [element, dir] = getIteratorValues(this.start, this.end);
 
         for (let index = 0; index < this.length; element += dir, index++) {
             const callReturn = callback(
@@ -103,7 +73,34 @@ class Range {
     }
 
     //misc
-    includes() {}
+    // includes() {}
+}
+
+function typeCheck(start, end) {
+    if (typeof start !== typeof end) {
+        throw new TypeError('Range values must be same type');
+    } else if (
+        (typeof start !== 'string' && typeof start !== 'number') ||
+        (typeof start === 'number' &&
+            (Math.floor(start) !== start || Math.floor(end) !== end))
+    ) {
+        throw new TypeError('Range values must only be integers or strings');
+    }
+}
+function getLength(start, end) {
+    let isString = typeof start === 'string';
+    return (
+        1 +
+        Math.abs(
+            isString ? end.charCodeAt(0) - start.charCodeAt(0) : end - start
+        )
+    );
+}
+function getIteratorValues(start, end) {
+    return [
+        typeof start === 'string' ? start.charCodeAt(0) : start,
+        start < end ? 1 : -1,
+    ];
 }
 
 // const factorial = num => {
@@ -112,8 +109,4 @@ class Range {
 //     }, 1);
 // };
 // console.log(factorial(10));
-console.log(
-    new Range(1, 100).filter(x => {
-        return x % 10 === 0;
-    })
-);
+// console.log(new Range(1, 100).filter(x => x % 10 === 0));
