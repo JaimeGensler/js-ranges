@@ -55,25 +55,28 @@ class Range {
         return total;
     }
 
+    //misc
     filter(callback) {
         const arr = [];
         let [element, dir] = getIteratorValues(this.start, this.end);
 
         for (let index = 0; index < this.length; element += dir, index++) {
-            const callReturn = callback(
+            const currentVal =
                 typeof this.start === 'string'
                     ? String.fromCharCode(element)
-                    : element,
-                index
-            );
-            if (callReturn) arr.push(element);
+                    : element;
+            if (callback(currentVal, index)) arr.push(currentVal);
         }
 
         return arr;
     }
 
-    //misc
-    // includes() {}
+    includes(value) {
+        if (this.start > this.end) {
+            return this.start >= value && value >= this.end;
+        }
+        return this.start <= value && value <= this.end;
+    }
 }
 
 function typeCheck(start, end) {
@@ -88,11 +91,12 @@ function typeCheck(start, end) {
     }
 }
 function getLength(start, end) {
-    let isString = typeof start === 'string';
     return (
         1 +
         Math.abs(
-            isString ? end.charCodeAt(0) - start.charCodeAt(0) : end - start
+            typeof start === 'string'
+                ? end.charCodeAt(0) - start.charCodeAt(0)
+                : end - start
         )
     );
 }
@@ -102,11 +106,3 @@ function getIteratorValues(start, end) {
         start < end ? 1 : -1,
     ];
 }
-
-// const factorial = num => {
-//     return new Range(1, num).reduce((acc, x) => {
-//         return acc * x;
-//     }, 1);
-// };
-// console.log(factorial(10));
-// console.log(new Range(1, 100).filter(x => x % 10 === 0));
