@@ -21,6 +21,7 @@ class Range {
             );
     }
 
+    //iterators
     forEach(callback) {
         let element =
             typeof this.start === 'string'
@@ -53,8 +54,7 @@ class Range {
                     : element,
                 index
             );
-
-            if (callReturn !== undefined) arr.push(callReturn);
+            arr.push(callReturn);
         }
 
         return arr;
@@ -80,16 +80,40 @@ class Range {
 
         return total;
     }
+
+    filter(callback) {
+        const arr = [];
+        let element =
+            typeof this.start === 'string'
+                ? this.start.charCodeAt(0)
+                : this.start;
+        const dir = this.start < this.end ? 1 : -1;
+
+        for (let index = 0; index < this.length; element += dir, index++) {
+            const callReturn = callback(
+                typeof this.start === 'string'
+                    ? String.fromCharCode(element)
+                    : element,
+                index
+            );
+            if (callReturn) arr.push(element);
+        }
+
+        return arr;
+    }
+
+    //misc
+    includes() {}
 }
 
-// let myRange = new Range('a', 'z');
-// myRange.forEach((x, i) => {
-//     console.log(`Element: ${x} | Index: ${i}`);
-// });
-
-const factorial = num => {
-    return new Range(1, num).reduce((acc, x) => {
-        return acc * x;
-    }, 1);
-};
-console.log(factorial(10));
+// const factorial = num => {
+//     return new Range(1, num).reduce((acc, x) => {
+//         return acc * x;
+//     }, 1);
+// };
+// console.log(factorial(10));
+console.log(
+    new Range(1, 100).filter(x => {
+        return x % 10 === 0;
+    })
+);
